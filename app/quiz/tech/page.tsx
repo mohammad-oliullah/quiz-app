@@ -12,6 +12,8 @@ export default function TechQuizSelectPage() {
   const router = useRouter();
   const [level, setLevel] = useState<(typeof TECH_LEVELS)[number]["id"]>("fresher");
   const [technologies, setTechnologies] = useState<string[]>(["react"]);
+  const [questionCount, setQuestionCount] = useState(15);
+  const [durationMinutes, setDurationMinutes] = useState(15);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ export default function TechQuizSelectPage() {
       const response = await fetch("/api/quiz/tech/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level, technologies }),
+        body: JSON.stringify({ level, technologies, questionCount, durationMinutes }),
       });
       const json = await response.json();
       if (!response.ok) {
@@ -41,6 +43,8 @@ export default function TechQuizSelectPage() {
         questions: json.questions as PublicQuestion[],
         level,
         technologies,
+        durationMinutes,
+        startedAt: Date.now(),
       });
       router.push(`/quiz/tech/${attemptId}`);
     } catch {
@@ -83,8 +87,48 @@ export default function TechQuizSelectPage() {
             </label>
           ))}
         </fieldset>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="space-y-2 text-sm font-medium">
+            Number of questions
+            <input
+              className="h-10 w-full rounded-md border border-slate-300 bg-white px-3"
+              type="number"
+              min={1}
+              max={15}
+              step={1}
+              value={questionCount}
+              onChange={(event) => setQuestionCount(Number(event.target.value))}
+            />
+            <span className="block font-normal text-slate-500">Choose 1–15 questions.</span>
+          </label>
+          <label className="space-y-2 text-sm font-medium">
+            Time limit (minutes)
+            <input
+              className="h-10 w-full rounded-md border border-slate-300 bg-white px-3"
+              type="number"
+              min={1}
+              max={180}
+              step={1}
+              value={durationMinutes}
+              onChange={(event) => setDurationMinutes(Number(event.target.value))}
+            />
+            <span className="block font-normal text-slate-500">Choose 1–180 minutes.</span>
+          </label>
+        </div>
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <Button onClick={start} disabled={loading || technologies.length === 0}>
+        <Button
+          onClick={start}
+          disabled={
+            loading ||
+            technologies.length === 0 ||
+            !Number.isInteger(questionCount) ||
+            questionCount < 1 ||
+            questionCount > 15 ||
+            !Number.isInteger(durationMinutes) ||
+            durationMinutes < 1 ||
+            durationMinutes > 180
+          }
+        >
           {loading ? "Starting…" : "Start quiz"}
         </Button>
       </CardContent>

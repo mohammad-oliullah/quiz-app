@@ -15,6 +15,8 @@ export type QuizPayload = {
   questions: PublicQuestion[];
   level?: string;
   technologies?: string[];
+  durationMinutes: number;
+  startedAt: number;
 };
 
 const PREFIX = "quiz-session:";

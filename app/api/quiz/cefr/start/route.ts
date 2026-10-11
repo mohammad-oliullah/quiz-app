@@ -1,11 +1,20 @@
 import { NextResponse } from "next/server";
-import { CEFR_LEVELS, CEFR_QUIZ_SIZE } from "@/lib/constants";
+import { CEFR_LEVELS } from "@/lib/constants";
 import { connectDB } from "@/lib/db";
 import { pickProportional, toPublicQuestion } from "@/lib/quiz";
+import { cefrStartSchema } from "@/lib/validators";
 import { Question } from "@/models/Question";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const parsed = cefrStartSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 }
+      );
+    }
+
     await connectDB();
     const groups = await Promise.all(
       CEFR_LEVELS.map((cefrLevel) =>
@@ -13,14 +22,15 @@ export async function POST() {
       )
     );
 
-    if (groups.every((group) => group.length === 0)) {
+    const availableCount = groups.reduce((count, group) => count + group.length, 0);
+    if (availableCount < parsed.data.questionCount) {
       return NextResponse.json(
-        { error: "No CEFR questions found. Seed the database." },
+        { error: `Only ${availableCount} CEFR questions are available.` },
         { status: 404 }
       );
     }
 
-    const selected = pickProportional(groups, CEFR_QUIZ_SIZE);
+    const selected = pickProportional(groups, parsed.data.questionCount);
     return NextResponse.json({
       questions: selected.map(toPublicQuestion),
     });

@@ -21,21 +21,38 @@ export default function AdminQuestionsPage() {
   const [level, setLevel] = useState("");
   const [technology, setTechnology] = useState("");
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  async function load(requestedPage = page) {
+    setLoading(true);
     const params = new URLSearchParams();
     if (quizType) params.set("quizType", quizType);
     if (level) params.set("level", level);
     if (technology) params.set("technology", technology);
-    const response = await fetch(`/api/admin/questions?${params.toString()}`);
-    const json = await response.json();
-    if (!response.ok) {
-      setError(json.error ?? "Could not load questions");
-      return;
+    params.set("page", String(requestedPage));
+    try {
+      const response = await fetch(`/api/admin/questions?${params.toString()}`);
+      const json = await response.json();
+      if (!response.ok) {
+        setError(json.error ?? "Could not load questions");
+        return;
+      }
+      setQuestions(json.questions);
+      setPage(json.page);
+      setPageSize(json.pageSize);
+      setTotalQuestions(json.totalQuestions);
+      setTotalPages(json.totalPages);
+      setError(null);
+    } catch {
+      setError("Could not load questions");
+    } finally {
+      setLoading(false);
     }
-    setQuestions(json.questions);
-    setError(null);
   }
 
   useEffect(() => {
@@ -108,7 +125,7 @@ export default function AdminQuestionsPage() {
             </select>
           </div>
           <div className="flex items-end">
-            <Button type="button" variant="secondary" onClick={() => void load()}>
+            <Button type="button" variant="secondary" onClick={() => void load(1)}>
               Filter
             </Button>
           </div>
@@ -118,6 +135,9 @@ export default function AdminQuestionsPage() {
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
       <ul className="space-y-3">
+        {!loading && questions.length === 0 ? (
+          <li className="text-sm text-slate-600">No questions found.</li>
+        ) : null}
         {questions.map((question) => (
           <li key={question.id} className="rounded-lg border border-slate-200 bg-white p-4">
             <p className="font-medium">{question.questionText}</p>
@@ -140,6 +160,34 @@ export default function AdminQuestionsPage() {
           </li>
         ))}
       </ul>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-600">
+          {totalQuestions === 0
+            ? "No questions"
+            : `Showing ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, totalQuestions)} of ${totalQuestions} questions`}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loading || page <= 1}
+            onClick={() => void load(page - 1)}
+          >
+            Previous
+          </Button>
+          <span className="flex items-center px-2 text-sm text-slate-600">
+            Page {page} of {Math.max(totalPages, 1)}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loading || page >= totalPages}
+            onClick={() => void load(page + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

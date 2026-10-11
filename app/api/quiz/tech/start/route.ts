@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { TECH_QUIZ_SIZE } from "@/lib/constants";
 import { connectDB } from "@/lib/db";
 import { pickProportional, toPublicQuestion } from "@/lib/quiz";
 import { techStartSchema } from "@/lib/validators";
@@ -25,14 +24,15 @@ export async function POST(request: Request) {
       )
     );
 
-    if (groups.every((group) => group.length === 0)) {
+    const availableCount = groups.reduce((count, group) => count + group.length, 0);
+    if (availableCount < parsed.data.questionCount) {
       return NextResponse.json(
-        { error: "No questions found for that level and technology mix. Seed the database." },
+        { error: `Only ${availableCount} questions are available for that selection.` },
         { status: 404 }
       );
     }
 
-    const selected = pickProportional(groups, TECH_QUIZ_SIZE);
+    const selected = pickProportional(groups, parsed.data.questionCount);
     return NextResponse.json({
       questions: selected.map(toPublicQuestion),
     });

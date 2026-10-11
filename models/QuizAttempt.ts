@@ -3,7 +3,7 @@ import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 const answerSchema = new Schema(
   {
     questionId: { type: Schema.Types.ObjectId, required: true },
-    selectedOptionId: { type: String, required: true },
+    selectedOptionId: { type: String },
     correct: { type: Boolean, required: true },
   },
   { _id: false }

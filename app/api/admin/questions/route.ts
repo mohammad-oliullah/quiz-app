@@ -15,17 +15,32 @@ export async function GET(request: Request) {
     quizType: searchParams.get("quizType") || undefined,
     level: searchParams.get("level") || undefined,
     technology: searchParams.get("technology") || undefined,
+    page: searchParams.get("page") ?? undefined,
+    pageSize: searchParams.get("pageSize") ?? undefined,
   });
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid filters" }, { status: 400 });
   }
 
   await connectDB();
+  const { page, pageSize, ...filters } = parsed.data;
   const filter = Object.fromEntries(
-    Object.entries(parsed.data).filter(([, value]) => value !== undefined)
+    Object.entries(filters).filter(([, value]) => value !== undefined)
   );
-  const questions = await Question.find(filter).sort({ _id: -1 }).lean().exec();
+  const totalQuestions = await Question.countDocuments(filter).exec();
+  const totalPages = Math.ceil(totalQuestions / pageSize);
+  const currentPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
+  const questions = await Question.find(filter)
+    .sort({ _id: -1 })
+    .skip((currentPage - 1) * pageSize)
+    .limit(pageSize)
+    .lean()
+    .exec();
   return NextResponse.json({
+    page: currentPage,
+    pageSize,
+    totalQuestions,
+    totalPages,
     questions: questions.map((question) => ({
       id: question._id.toString(),
       quizType: question.quizType,

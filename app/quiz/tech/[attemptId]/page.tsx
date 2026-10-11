@@ -37,7 +37,11 @@ export default function TechAttemptPage() {
       extraBody={{
         level: payload.level,
         technologies: payload.technologies,
+        questionCount: payload.questions.length,
+        durationMinutes: payload.durationMinutes,
       }}
+      durationMinutes={payload.durationMinutes}
+      startedAt={payload.startedAt}
     />
   );
 }

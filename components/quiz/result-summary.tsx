@@ -12,12 +12,14 @@ export function ResultSummary({
   cefrResult,
   saved,
   results,
+  timedOut = false,
 }: {
   score: number;
   totalQuestions: number;
   cefrResult?: string;
   saved: boolean;
   results: GradedResult[];
+  timedOut?: boolean;
 }) {
   return (
     <div className="space-y-6">
@@ -29,6 +31,11 @@ export function ResultSummary({
           <p className="text-2xl font-semibold">
             {score} / {totalQuestions}
           </p>
+          {timedOut ? (
+            <p className="text-sm text-red-700">
+              Time expired. Unanswered questions were counted as incorrect.
+            </p>
+          ) : null}
           {cefrResult ? (
             <p>
               Estimated CEFR band: <span className="font-semibold">{cefrResult}</span>

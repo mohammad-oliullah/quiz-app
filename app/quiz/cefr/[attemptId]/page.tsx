@@ -30,5 +30,16 @@ export default function CefrAttemptPage() {
     );
   }
 
-  return <QuizPlayer questions={payload.questions} submitUrl="/api/quiz/cefr/submit" />;
+  return (
+    <QuizPlayer
+      questions={payload.questions}
+      submitUrl="/api/quiz/cefr/submit"
+      extraBody={{
+        questionCount: payload.questions.length,
+        durationMinutes: payload.durationMinutes,
+      }}
+      durationMinutes={payload.durationMinutes}
+      startedAt={payload.startedAt}
+    />
+  );
 }

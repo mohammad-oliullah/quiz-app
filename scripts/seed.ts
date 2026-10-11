@@ -1,6 +1,4 @@
-import { config } from "dotenv";
-
-config({ path: ".env.local" });
+import "./load-env";
 import bcrypt from "bcryptjs";
 import { connectDB } from "../lib/db";
 import { Question } from "../models/Question";

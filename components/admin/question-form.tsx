@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,12 @@ export function QuestionForm({
   });
 
   const quizType = form.watch("quizType");
+  const optionValues = form.watch("options");
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "options",
+    keyName: "fieldKey",
+  });
 
   useEffect(() => {
     if (initial?.questionText) {
@@ -76,6 +82,23 @@ export function QuestionForm({
     }
     router.push("/admin/questions");
     router.refresh();
+  }
+
+  function addOption() {
+    const usedIds = new Set(optionValues.map((option) => option.id));
+    const nextId = "abcdefghijklmnopqrstuvwxyz".split("").find((id) => !usedIds.has(id));
+    if (!nextId) return;
+
+    append({ id: nextId, text: "" });
+  }
+
+  function removeOption(index: number) {
+    const removedId = optionValues[index]?.id;
+    if (removedId && form.getValues("correctOptionId") === removedId) {
+      const replacement = optionValues.find((_, optionIndex) => optionIndex !== index);
+      if (replacement) form.setValue("correctOptionId", replacement.id);
+    }
+    remove(index);
   }
 
   return (
@@ -150,16 +173,42 @@ export function QuestionForm({
         ) : null}
       </div>
 
-      {(["a", "b", "c", "d"] as const).map((id, index) => (
-        <div key={id} className="space-y-2">
-          <Label htmlFor={`option-${id}`}>Option {id.toUpperCase()}</Label>
-          <Input
-            id={`option-${id}`}
-            {...form.register(`options.${index}.text`)}
-          />
-          <input type="hidden" value={id} {...form.register(`options.${index}.id`)} />
-        </div>
-      ))}
+      <div className="space-y-3">
+        <Label>Options</Label>
+        {fields.map((field, index) => (
+          <div key={field.fieldKey} className="flex items-end gap-2">
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label htmlFor={`option-${field.id}`}>
+                Option {field.id.toUpperCase()}
+              </Label>
+              <Input
+                id={`option-${field.id}`}
+                {...form.register(`options.${index}.text`)}
+              />
+              <input type="hidden" {...form.register(`options.${index}.id`)} />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={fields.length <= 2}
+              onClick={() => removeOption(index)}
+            >
+              Remove
+            </Button>
+          </div>
+        ))}
+        {form.formState.errors.options?.message ? (
+          <p className="text-sm text-red-600">{form.formState.errors.options.message}</p>
+        ) : null}
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={fields.length >= 26}
+          onClick={addOption}
+        >
+          Add option
+        </Button>
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="correctOptionId">Correct option</Label>
@@ -168,10 +217,11 @@ export function QuestionForm({
           className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
           {...form.register("correctOptionId")}
         >
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
-          <option value="d">D</option>
+          {optionValues.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.id.toUpperCase()}
+            </option>
+          ))}
         </select>
       </div>
 
