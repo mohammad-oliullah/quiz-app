@@ -1,4 +1,10 @@
+import { TECHNOLOGIES } from "@/lib/constants";
+import type { TechnologyId } from "@/lib/constants";
 import { z } from "zod";
+
+const technologySchema = z.enum(
+  TECHNOLOGIES.map((technology) => technology.id) as [TechnologyId, ...TechnologyId[]]
+);
 
 export const signupSchema = z.object({
   name: z.string().min(2, "Name is too short").max(80),
@@ -14,7 +20,7 @@ export const loginSchema = z.object({
 export const techStartSchema = z.object({
   level: z.enum(["fresher", "junior", "senior"]),
   technologies: z
-    .array(z.enum(["react", "nodejs", "mongodb"]))
+    .array(technologySchema)
     .min(1, "Select at least one technology"),
   questionCount: z.number().int().min(1).max(15),
   durationMinutes: z.number().int().min(1).max(180),
@@ -62,7 +68,7 @@ const optionSchema = z.object({
 export const questionFormSchema = z
   .object({
     quizType: z.enum(["tech", "cefr"]),
-    technology: z.enum(["react", "nodejs", "mongodb"]).optional(),
+    technology: technologySchema.optional(),
     level: z.enum(["fresher", "junior", "senior"]).optional(),
     cefrLevel: z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]).optional(),
     questionText: z.string().min(8, "Question text is required"),
@@ -119,7 +125,7 @@ export const questionFormSchema = z
 export const adminQuestionQuerySchema = z.object({
   quizType: z.enum(["tech", "cefr"]).optional(),
   level: z.enum(["fresher", "junior", "senior"]).optional(),
-  technology: z.enum(["react", "nodejs", "mongodb"]).optional(),
+  technology: technologySchema.optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(10),
 });

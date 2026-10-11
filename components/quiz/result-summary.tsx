@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { CefrLevelResult } from "@/lib/quiz";
 import type { GradedResult } from "@/lib/quiz-session";
 
 export function ResultSummary({
   score,
   totalQuestions,
   cefrResult,
+  cefrBreakdown,
   saved,
   results,
   timedOut = false,
@@ -17,6 +19,7 @@ export function ResultSummary({
   score: number;
   totalQuestions: number;
   cefrResult?: string;
+  cefrBreakdown?: CefrLevelResult[];
   saved: boolean;
   results: GradedResult[];
   timedOut?: boolean;
@@ -38,8 +41,34 @@ export function ResultSummary({
           ) : null}
           {cefrResult ? (
             <p>
-              Estimated CEFR band: <span className="font-semibold">{cefrResult}</span>
+              Estimated CEFR level: <span className="font-semibold">{cefrResult}</span>
             </p>
+          ) : null}
+          {cefrBreakdown ? (
+            <div className="space-y-2 pt-2">
+              <h3 className="font-medium">CEFR level breakdown</h3>
+              <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {cefrBreakdown.map((level) => (
+                  <li
+                    key={level.level}
+                    className="rounded-md border border-slate-200 px-3 py-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium">{level.level}</span>
+                      <span className={level.passed ? "text-emerald-700 dark:text-emerald-300" : "text-slate-600"}>
+                        {level.total === 0
+                          ? "Not tested"
+                          : `${level.correct}/${level.total} (${level.percent}%)${level.passed ? " · Passed" : " · Not passed"}`}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm text-slate-600">
+                You need at least 70% at each level, starting from A1, to place at
+                a higher level.
+              </p>
+            </div>
           ) : null}
           {saved ? (
             <p className="text-sm text-slate-600">This attempt was saved to your account.</p>

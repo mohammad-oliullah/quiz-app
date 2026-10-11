@@ -51,12 +51,72 @@ export function pickProportional<T>(groups: T[][], total: number): T[] {
   return shuffle(picks).slice(0, total);
 }
 
-export function scoreToCefr(score: number, total: number): CefrLevel {
-  if (total <= 0) return "A1";
-  const ratio = score / total;
-  const index = Math.min(
-    CEFR_LEVELS.length - 1,
-    Math.floor(ratio * CEFR_LEVELS.length)
+export interface CefrQuestion {
+  _id: { toString(): string };
+  cefrLevel: CefrLevel;
+  correctOptionId: string;
+}
+
+export interface CefrAnswer {
+  questionId: string;
+  selectedOptionId?: string | null;
+}
+
+export interface CefrLevelResult {
+  level: CefrLevel;
+  total: number;
+  correct: number;
+  percent: number;
+  passed: boolean;
+}
+
+export interface CefrResult {
+  level: CefrLevel | "Below A1";
+  breakdown: CefrLevelResult[];
+}
+
+export function isCefrLevel(
+  value: string | null | undefined
+): value is CefrLevel {
+  return CEFR_LEVELS.some((level) => level === value);
+}
+
+export function scoreCefr(
+  questions: CefrQuestion[],
+  answers: CefrAnswer[],
+  passMark = 0.7
+): CefrResult {
+  const answerMap = new Map(
+    answers.map((answer) => [
+      answer.questionId,
+      answer.selectedOptionId ?? null,
+    ])
   );
-  return CEFR_LEVELS[index];
+
+  const breakdown: CefrLevelResult[] = CEFR_LEVELS.map((level) => {
+    const levelQuestions = questions.filter(
+      (question) => question.cefrLevel === level
+    );
+    const correct = levelQuestions.filter(
+      (question) => answerMap.get(question._id.toString()) === question.correctOptionId
+    ).length;
+    const total = levelQuestions.length;
+    const percent = total ? Math.round((correct / total) * 100) : 0;
+
+    return {
+      level,
+      total,
+      correct,
+      percent,
+      passed: total > 0 && correct / total >= passMark,
+    };
+  });
+
+  let placed: CefrResult["level"] = "Below A1";
+  for (const result of breakdown) {
+    if (!result.passed) break;
+    placed = result.level;
+  }
+
+  return { level: placed, breakdown };
 }

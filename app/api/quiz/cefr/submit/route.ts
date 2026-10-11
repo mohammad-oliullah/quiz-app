@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
-import { scoreToCefr } from "@/lib/quiz";
+import { isCefrLevel, scoreCefr, type CefrQuestion } from "@/lib/quiz";
 import { cefrSubmitSchema } from "@/lib/validators";
 import { Question } from "@/models/Question";
 import { QuizAttempt } from "@/models/QuizAttempt";
@@ -68,7 +68,18 @@ export async function POST(request: Request) {
 
     const score = graded.filter((item) => item.correct).length;
     const totalQuestions = graded.length;
-    const cefrResult = scoreToCefr(score, totalQuestions);
+    const cefrQuestions: CefrQuestion[] = questions.map((question) => {
+      if (!isCefrLevel(question.cefrLevel)) {
+        throw new Error(`CEFR question ${question._id.toString()} has no valid level`);
+      }
+      return {
+        _id: question._id,
+        cefrLevel: question.cefrLevel,
+        correctOptionId: question.correctOptionId,
+      };
+    });
+    const cefrScore = scoreCefr(cefrQuestions, answers);
+    const cefrResult = cefrScore.level;
 
     const session = await getSession();
     let attemptId: string | undefined;
@@ -94,6 +105,7 @@ export async function POST(request: Request) {
       score,
       totalQuestions,
       cefrResult,
+      cefrBreakdown: cefrScore.breakdown,
       results: graded,
     });
   } catch (error) {

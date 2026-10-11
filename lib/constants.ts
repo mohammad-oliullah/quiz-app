@@ -2,6 +2,12 @@ export const TECHNOLOGIES = [
   { id: "react", label: "React" },
   { id: "nodejs", label: "Node.js" },
   { id: "mongodb", label: "MongoDB" },
+  { id: "typescript", label: "TypeScript" },
+  { id: "nestjs", label: "NestJS" },
+  { id: "system-design", label: "System Design" },
+  { id: "docker", label: "Docker" },
+  { id: "nextjs", label: "Next.js" },
+  { id: "devops", label: "DevOps" },
 ] as const;
 
 export const TECH_LEVELS = [

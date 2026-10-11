@@ -23,8 +23,9 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle>Job interview quiz</CardTitle>
             <CardDescription>
-              Pick Fresher, Junior, or Senior and one or more of React, Node.js, and
-              MongoDB.
+              Choose your experience level and one or more technologies, including
+              React, Node.js, MongoDB, TypeScript, NestJS, System Design, Docker,
+              Next.js, and DevOps.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import type { PublicQuestion } from "@/lib/quiz";
+import type { CefrLevelResult, PublicQuestion } from "@/lib/quiz";
 import type { GradedResult } from "@/lib/quiz-session";
 import { ResultSummary } from "@/components/quiz/result-summary";
 
@@ -14,6 +14,7 @@ type SubmitResponse = {
   score: number;
   totalQuestions: number;
   cefrResult?: string;
+  cefrBreakdown?: CefrLevelResult[];
   results: GradedResult[];
   error?: string;
 };
@@ -106,6 +107,7 @@ export function QuizPlayer({
         score={result.score}
         totalQuestions={result.totalQuestions}
         cefrResult={result.cefrResult}
+        cefrBreakdown={result.cefrBreakdown}
         saved={result.saved}
         results={result.results}
         timedOut={timeExpired}
