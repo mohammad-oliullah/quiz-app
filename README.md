@@ -2,7 +2,7 @@
 
 A Next.js quiz app with two independent quiz experiences:
 
-- **Job interview quizzes:** choose a Fresher, Junior, or Senior level and one or more technologies.
+- **Full-stack Development Quiz:** choose a Fresher, Junior, or Senior level and one or more technologies.
 - **CEFR English test:** take a mixed-level English quiz and get an estimated A1–C2 result.
 
 Guests can take quizzes. Signed-in users can save attempts to their dashboard. Admins can manage the question bank.
@@ -83,7 +83,7 @@ The core MVP flows are implemented: credentials and optional Google sign-in, tec
 | Route | Purpose |
 | --- | --- |
 | `/` | Choose a quiz |
-| `/quiz/tech` | Configure a job-interview quiz |
+| `/quiz/tech` | Configure a full-stack development quiz |
 | `/quiz/cefr` | Configure a CEFR English test |
 | `/login`, `/signup` | Sign in or create an account |
 | `/dashboard` | View saved quiz attempts (sign-in required) |

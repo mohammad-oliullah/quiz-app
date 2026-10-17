@@ -1,18 +1,18 @@
 export const TECHNOLOGIES = [
   { id: "react", label: "React" },
-  { id: "nodejs", label: "Node.js" },
-  { id: "mongodb", label: "MongoDB" },
-  { id: "typescript", label: "TypeScript" },
-  { id: "nestjs", label: "NestJS" },
-  { id: "system-design", label: "System Design" },
   { id: "docker", label: "Docker" },
+  { id: "sql-nd-sql-dbms", label: "SQL and NoSQL DBMS" },
   { id: "nextjs", label: "Next.js" },
   { id: "devops", label: "DevOps" },
+  { id: "mongodb", label: "MongoDB" },
+  { id: "nodejs", label: "Node.js" },
+  { id: "system-design", label: "System Design" },
+  { id: "typescript", label: "TypeScript" },
 ] as const;
 
 export const TECH_LEVELS = [
-  { id: "fresher", label: "Fresher (0–1 yr)" },
-  { id: "junior", label: "Junior (1–4 yr)" },
+  { id: "fresher", label: "Fresher (0-1 yr)" },
+  { id: "junior", label: "Junior (1-4 yr)" },
   { id: "senior", label: "Senior (4+ yr)" },
 ] as const;
 

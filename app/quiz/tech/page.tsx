@@ -57,7 +57,7 @@ export default function TechQuizSelectPage() {
   return (
     <Card className="mx-auto max-w-xl">
       <CardHeader>
-        <CardTitle>Job interview quiz</CardTitle>
+        <CardTitle>Full-stack Development Quiz</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <fieldset className="space-y-2">

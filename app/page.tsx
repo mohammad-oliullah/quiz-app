@@ -14,18 +14,19 @@ export default function HomePage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Quiz Platform</h1>
         <p className="mt-2 max-w-2xl text-slate-600">
-          Take a job-interview tech quiz by experience level and stack, or measure
-          your English with a CEFR-style test. Guests can play; sign in to save scores.
+          Take a full-stack development quiz by experience level and technology, or
+          measure your English with a CEFR-style test. Guests can play; sign in to save
+          scores.
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Job interview quiz</CardTitle>
+            <CardTitle>Full-stack Development Quiz</CardTitle>
             <CardDescription>
               Choose your experience level and one or more technologies, including
-              React, Node.js, MongoDB, TypeScript, NestJS, System Design, Docker,
-              Next.js, and DevOps.
+              React, Docker, SQL and NoSQL DBMS, Next.js, DevOps, MongoDB, Node.js,
+              System Design, and TypeScript.
             </CardDescription>
           </CardHeader>
           <CardContent>

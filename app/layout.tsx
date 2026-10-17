@@ -17,7 +17,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Quiz Platform",
-  description: "Job interview quizzes and a CEFR English level test",
+  description: "Full-stack development quizzes and a CEFR English level test",
 };
 
 export default function RootLayout({

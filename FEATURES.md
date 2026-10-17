@@ -2,7 +2,7 @@
 
 ## Already implemented
 
-- **Two quiz types:** job-interview quizzes for Fresher, Junior, and Senior levels, covering React, Node.js, MongoDB, TypeScript, NestJS, System Design, Docker, Next.js, and DevOps; and an English test covering CEFR levels A1–C2.
+- **Two quiz types:** full-stack development quizzes for Fresher, Junior, and Senior levels, covering React, Docker, SQL and NoSQL DBMS, Next.js, DevOps, MongoDB, Node.js, System Design, and TypeScript; and an English test covering CEFR levels A1–C2.
 - **Quiz setup:** choose technologies and question count for tech quizzes, and question count for CEFR tests. Both flows let the user choose a time limit.
 - **Quiz experience:** randomized questions, one question at a time, progress indicator, countdown timer, automatic submission when time runs out, and unanswered questions counted as incorrect.
 - **Grading and results:** answers are graded on the server. Results show the score, selected and correct answers, explanations when available, and a level-by-level breakdown for CEFR.
